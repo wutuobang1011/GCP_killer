@@ -19,6 +19,9 @@
   const saveWrong = () => LS.set('pca.wrong', wrongBook);
   const saveEdits = () => LS.set('pca.edits', edits);
   const saveSettings = () => LS.set('pca.settings', settings);
+  const AUTH_KEY = 'pca.auth';
+  const DEMO_USERNAME = 'admin';
+  const DEMO_PASSWORD = 'admin';
 
   /* ---------------- helpers ---------------- */
   const $ = s => document.querySelector(s);
@@ -29,6 +32,17 @@
     document.querySelectorAll('.view').forEach(v => v.classList.add('hidden'));
     $('#' + id).classList.remove('hidden');
     window.scrollTo({ top: 0 });
+  }
+  function isLoggedIn() { return LS.get(AUTH_KEY, null)?.loggedIn === true; }
+  function showLogin() {
+    clearInterval(timer);
+    session = null;
+    view('view-login');
+    $('#login-username').focus();
+  }
+  function logout() {
+    LS.set(AUTH_KEY, { loggedIn: false });
+    showLogin();
   }
   function openModal(id) { $('#' + id).classList.remove('hidden'); }
   function closeModal(id) { $('#' + id).classList.add('hidden'); }
@@ -337,6 +351,25 @@
     saveStats(); saveWrong(); renderHome();
   });
   $('#set-showcn').addEventListener('change', e => { settings.showCn = e.target.checked; saveSettings(); });
+  $('#btn-logout').addEventListener('click', () => {
+    if (confirm('确定退出登录吗？')) logout();
+  });
+  $('#login-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const username = $('#login-username').value.trim();
+    const password = $('#login-password').value;
+    const error = $('#login-error');
+    if (username === DEMO_USERNAME && password === DEMO_PASSWORD) {
+      LS.set(AUTH_KEY, { loggedIn: true, username: DEMO_USERNAME });
+      error.classList.add('hidden');
+      $('#login-password').value = '';
+      renderHome();
+      view('view-home');
+    } else {
+      error.classList.remove('hidden');
+      $('#login-password').select();
+    }
+  });
 
   $('#btn-exit').addEventListener('click', () => {
     if (!session) return view('home');
@@ -367,6 +400,6 @@
   });
 
   /* ---------------- boot ---------------- */
-  renderHome();
-  view('view-home');
+  if (isLoggedIn()) { renderHome(); view('view-home'); }
+  else showLogin();
 })();

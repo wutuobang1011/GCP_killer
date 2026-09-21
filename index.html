@@ -10,9 +10,31 @@
 <body>
 <div id="app">
 
+  <!-- ============ LOGIN ============ -->
+  <section id="view-login" class="view login-view">
+    <main class="login-shell">
+      <div class="login-card card">
+        <div class="login-mark">P</div>
+        <div class="hero-badge">Google Cloud</div>
+        <h1>Professional Cloud Architect</h1>
+        <p class="login-sub">PCA 刷题助手 · 登录后开始练习</p>
+        <form id="login-form" novalidate>
+          <label class="login-label" for="login-username">用户名</label>
+          <input id="login-username" class="login-input" name="username" autocomplete="username" required />
+          <label class="login-label" for="login-password">密码</label>
+          <input id="login-password" class="login-input" name="password" type="password" autocomplete="current-password" required />
+          <p class="login-error hidden" id="login-error" role="alert">用户名或密码错误</p>
+          <button class="btn primary login-submit" type="submit">登录</button>
+        </form>
+        <p class="login-hint">当前练习版账号：用户名 admin，密码 admin</p>
+      </div>
+    </main>
+  </section>
+
   <!-- ============ HOME ============ -->
   <section id="view-home" class="view">
     <header class="hero">
+      <button class="logout-btn" id="btn-logout" type="button">退出登录</button>
       <div class="hero-badge">Google Cloud</div>
       <h1>Professional Cloud Architect</h1>
       <p class="hero-sub">刷题助手 · 英文题干 + 中文解析 · <span id="bank-total">0</span> 道题</p>
