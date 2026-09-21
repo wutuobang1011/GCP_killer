@@ -171,7 +171,7 @@ button { font-family: inherit; cursor: pointer; }
 .opt {
   display: flex; gap: 12px; align-items: flex-start;
   border: 1.5px solid var(--border); border-radius: 13px; padding: 13px 15px;
-  background: var(--surface); transition: all .14s; cursor: pointer;
+  background: var(--surface); transition: all .14s; cursor: pointer; min-width: 0;
 }
 .opt:hover { border-color: var(--primary); background: var(--primary-soft); }
 .opt .key {
@@ -179,7 +179,7 @@ button { font-family: inherit; cursor: pointer; }
   border: 1px solid var(--border); display: inline-flex; align-items: center; justify-content: center;
   font-weight: 700; font-size: 13px; color: var(--text-dim);
 }
-.opt .txt { font-size: 15px; line-height: 1.6; flex: 1; min-width: 0; }
+.opt .txt { font-size: 15px; line-height: 1.6; flex: 1; min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
 .opt .txt .cn { display: block; color: var(--text-faint); font-size: 13px; margin-top: 4px; }
 .opt.selected { border-color: var(--primary); background: var(--primary-soft); }
 .opt.selected .key { background: var(--primary); color: #fff; border-color: var(--primary); }
