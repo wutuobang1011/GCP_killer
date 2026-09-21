@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>PCA 刷题助手 · Professional Cloud Architect</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231a73e8'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='sans-serif'%3EP%3C/text%3E%3C/svg%3E" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ LOGIN ============ -->
+  <section id="view-login" class="view login-view">
+    <main class="login-shell">
+      <div class="login-card card">
+        <div class="login-mark">P</div>
+        <div class="hero-badge">Google Cloud</div>
+        <h1>Professional Cloud Architect</h1>
+        <p class="login-sub">PCA 刷题助手 · 登录后开始练习</p>
+        <form id="login-form" novalidate>
+          <label class="login-label" for="login-username">用户名</label>
+          <input id="login-username" class="login-input" name="username" autocomplete="username" required />
+          <label class="login-label" for="login-password">密码</label>
+          <input id="login-password" class="login-input" name="password" type="password" autocomplete="current-password" required />
+          <p class="login-error hidden" id="login-error" role="alert">用户名或密码错误</p>
+          <button class="btn primary login-submit" type="submit">登录</button>
+        </form>
+        <p class="login-hint">当前练习版账号：用户名 admin，密码 admin</p>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ HOME ============ -->
+  <section id="view-home" class="view">
+    <header class="hero">
+      <button class="logout-btn" id="btn-logout" type="button">退出登录</button>
+      <div class="hero-badge">Google Cloud</div>
+      <h1>Professional Cloud Architect</h1>
+      <p class="hero-sub">刷题助手 · 英文题干 + 中文解析 · <span id="bank-total">0</span> 道题</p>
+      <div class="stats" id="hero-stats">
+        <div class="stat"><span class="stat-num" id="stat-answered">0</span><span class="stat-lbl">累计作答</span></div>
+        <div class="stat"><span class="stat-num" id="stat-acc">--</span><span class="stat-lbl">正确率</span></div>
+        <div class="stat"><span class="stat-num" id="stat-wrong">0</span><span class="stat-lbl">错题数</span></div>
+      </div>
+    </header>
+
+    <main class="home-main">
+      <div class="card mode-card">
+        <div class="mode-head">
+          <h2>🎲 随机模拟考</h2>
+          <p>从全部题目中随机抽取，模拟真实考试节奏</p>
+        </div>
+        <div class="chips" id="random-chips">
+          <button class="chip primary" data-n="100">100 道（推荐）</button>
+          <button class="chip" data-n="50">50 道</button>
+          <button class="chip" data-n="20">20 道</button>
+          <button class="chip" data-n="all">全部随机</button>
+        </div>
+      </div>
+
+      <div class="card mode-card">
+        <div class="mode-head">
+          <h2>📚 按 Topic 练习</h2>
+          <p>选择某个主题单独强化练习</p>
+        </div>
+        <div class="topic-grid" id="topic-grid"></div>
+      </div>
+
+      <div class="card mode-card">
+        <div class="mode-head">
+          <h2>🔁 错题重练</h2>
+          <p>集中攻克做错的题目（答对后会从错题本移除）</p>
+        </div>
+        <div class="chips">
+          <button class="chip primary" id="btn-wrong">开始练习错题</button>
+          <button class="chip ghost" id="btn-clear">清空记录</button>
+        </div>
+      </div>
+
+      <div class="card mode-card subtle">
+        <label class="switch-row">
+          <span>练习时显示中文翻译（题目与选项）</span>
+          <input type="checkbox" id="set-showcn" class="switch" />
+        </label>
+        <p class="hint">提示：题目与选项默认显示英文；答错后会自动展开中文解析。</p>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ PRACTICE ============ -->
+  <section id="view-practice" class="view hidden">
+    <header class="topbar">
+      <button class="icon-btn" id="btn-exit" title="退出">←</button>
+      <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+      <div class="topstat">
+        <span class="pill" id="pill-index">1 / 1</span>
+        <span class="pill ok" id="pill-correct">✓ 0</span>
+        <span class="pill bad" id="pill-wrong">✗ 0</span>
+        <span class="pill time" id="pill-time">00:00</span>
+      </div>
+    </header>
+
+    <main class="practice-main">
+      <article class="card q-card">
+        <div class="q-meta">
+          <span class="tag" id="q-source">Topic 1 · Question #1</span>
+          <span class="tag multi hidden" id="q-multi">多选</span>
+          <button class="tag link hidden" id="btn-case">📄 查看案例</button>
+          <button class="tag link" id="btn-edit">✏️ 纠错</button>
+        </div>
+        <div class="q-body">
+          <div class="q-en" id="q-text"></div>
+          <div class="q-cn hidden" id="q-text-cn"></div>
+        </div>
+        <ul class="options" id="options"></ul>
+        <div class="feedback hidden" id="feedback">
+          <div class="fb-head" id="fb-head"></div>
+          <div class="ana-label">中文解析</div>
+          <div class="ana" id="fb-ana"></div>
+        </div>
+      </article>
+
+      <div class="action-bar">
+        <button class="btn primary" id="btn-submit" disabled>提交答案</button>
+        <button class="btn next hidden" id="btn-next">下一题 →</button>
+        <button class="btn ghost" id="btn-show-ana">查看解析</button>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ RESULT ============ -->
+  <section id="view-result" class="view hidden">
+    <main class="practice-main">
+      <div class="card result-card">
+        <div class="score-ring" id="score-ring">
+          <div class="score-inner">
+            <div class="score-num" id="score-pct">0%</div>
+            <div class="score-lbl">正确率</div>
+          </div>
+        </div>
+        <h2 id="result-title">练习完成</h2>
+        <p class="result-sub" id="result-sub"></p>
+        <div class="result-stats">
+          <div class="stat"><span class="stat-num" id="r-correct">0</span><span class="stat-lbl">答对</span></div>
+          <div class="stat"><span class="stat-num" id="r-wrong">0</span><span class="stat-lbl">答错</span></div>
+          <div class="stat"><span class="stat-num" id="r-time">00:00</span><span class="stat-lbl">用时</span></div>
+        </div>
+        <div class="chips center">
+          <button class="btn primary" id="btn-retry">再练一次</button>
+          <button class="btn ghost" id="btn-wrong2">练错题</button>
+          <button class="btn ghost" id="btn-home">返回首页</button>
+        </div>
+      </div>
+
+      <div class="card wrong-review hidden" id="wrong-review">
+        <h3>错题回顾</h3>
+        <div id="wrong-list"></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- ============ MODALS ============ -->
+  <div class="modal hidden" id="modal-case">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="case-title">案例背景</h3>
+        <button class="icon-btn" data-close="modal-case">✕</button>
+      </div>
+      <div class="modal-body" id="case-body"></div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="modal-edit">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>校对 / 修改题目内容</h3>
+        <button class="icon-btn" data-close="modal-edit">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="hint">如发现 OCR 或翻译有误，可在此修正。修改仅保存在本地浏览器。</p>
+        <label class="edit-label">题干（英文）</label>
+        <textarea id="edit-q" rows="4"></textarea>
+        <label class="edit-label">选项（英文）</label>
+        <div id="edit-opts"></div>
+        <label class="edit-label">正确答案</label>
+        <div class="ans-checks" id="edit-ans"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn ghost" id="btn-edit-reset">恢复原始</button>
+        <button class="btn ghost" data-close="modal-edit">取消</button>
+        <button class="btn primary" id="btn-edit-save">保存</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="data/bank.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
