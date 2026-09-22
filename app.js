@@ -62,6 +62,19 @@
   }
   const sameSet = (a, b) => a.length === b.length && a.slice().sort().join('') === b.slice().sort().join('');
 
+  // Shuffle the visible positions while remapping answer keys so grading and
+  // the follow-up answer/feedback screens stay aligned with the displayed list.
+  function shuffledQuestion(q) {
+    const visibleOpts = shuffle(q.opts);
+    const visibleKeys = visibleOpts.map((_, i) => String.fromCharCode(65 + i));
+    const keyMap = new Map(visibleOpts.map((o, i) => [o.k, visibleKeys[i]]));
+    return {
+      ...q,
+      opts: visibleOpts.map((o, i) => ({ ...o, k: visibleKeys[i] })),
+      ans: q.ans.map(k => keyMap.get(k)).sort()
+    };
+  }
+
   function fmtTime(ms) {
     const s = Math.max(0, Math.floor(ms / 1000));
     const m = Math.floor(s / 60), ss = s % 60;
@@ -105,7 +118,7 @@
     }
     session = {
       mode, param, ids: pool.map(q => q.id), idx: 0, results: {}, picks: {},
-      start: Date.now(), locked: false, sel: new Set(), revealed: false
+      displayQs: {}, start: Date.now(), locked: false, sel: new Set(), revealed: false
     };
     $('#btn-show-ana').classList.add('hidden');
     $('#btn-submit').disabled = true;
@@ -123,7 +136,9 @@
 
   function renderQuestion() {
     const id = session.ids[session.idx];
-    const q = qView(BY_ID[id]);
+    const baseQ = qView(BY_ID[id]);
+    const q = shuffledQuestion(baseQ);
+    session.displayQs[id] = q;
     session.locked = false; session.sel = new Set(); session.revealed = false;
 
     // top bar
@@ -176,7 +191,7 @@
 
   function toggleOption(k) {
     if (session.locked) return;
-    const q = qView(BY_ID[session.ids[session.idx]]);
+    const q = session.displayQs[session.ids[session.idx]];
     if (q.multi) {
       if (session.sel.has(k)) session.sel.delete(k); else session.sel.add(k);
     } else {
@@ -188,7 +203,7 @@
 
   function submitAnswer() {
     if (session.locked) return;
-    const q = qView(BY_ID[session.ids[session.idx]]);
+    const q = session.displayQs[session.ids[session.idx]];
     const sel = Array.from(session.sel).sort();
     const correct = sameSet(sel, q.ans);
     session.locked = true;
@@ -273,7 +288,7 @@
     else {
       wrap.classList.remove('hidden');
       wrongList.forEach(id => {
-        const q = qView(BY_ID[id]);
+        const q = session.displayQs[id] || qView(BY_ID[id]);
         const item = el('div', 'wrong-item');
         const mine = (session.picks[id] || []).join('');
         let html = '<div class="w-meta">Topic ' + q.topic + ' · Question #' + q.num + '</div>';
