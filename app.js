@@ -62,16 +62,13 @@
   }
   const sameSet = (a, b) => a.length === b.length && a.slice().sort().join('') === b.slice().sort().join('');
 
-  // Shuffle the visible positions while remapping answer keys so grading and
-  // the follow-up answer/feedback screens stay aligned with the displayed list.
+  // Shuffle visible positions but keep each option's original letter attached.
+  // The explanations are authored against the source letters, so this keeps
+  // the answer, feedback, and explanation references consistent.
   function shuffledQuestion(q) {
-    const visibleOpts = shuffle(q.opts);
-    const visibleKeys = visibleOpts.map((_, i) => String.fromCharCode(65 + i));
-    const keyMap = new Map(visibleOpts.map((o, i) => [o.k, visibleKeys[i]]));
     return {
       ...q,
-      opts: visibleOpts.map((o, i) => ({ ...o, k: visibleKeys[i] })),
-      ans: q.ans.map(k => keyMap.get(k)).sort()
+      opts: shuffle(q.opts)
     };
   }
 
