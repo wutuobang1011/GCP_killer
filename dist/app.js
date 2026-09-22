@@ -62,13 +62,28 @@
   }
   const sameSet = (a, b) => a.length === b.length && a.slice().sort().join('') === b.slice().sort().join('');
 
-  // Shuffle visible positions but keep each option's original letter attached.
-  // The explanations are authored against the source letters, so this keeps
-  // the answer, feedback, and explanation references consistent.
+  // Rewrite option references in the explanation after the content is
+  // shuffled. This keeps the explanation's A/B/C/D references aligned with
+  // the labels shown to the user.
+  function remapAnalysis(text, keyMap) {
+    return String(text || '')
+      .replace(/(^|[\n\r])(\s*)([A-F])(?=\s*[.．、:：])/g,
+        (_, start, space, key) => start + space + (keyMap.get(key) || key))
+      .replace(/(答案|选择|选项)(\s*[:：]?\s*)([A-F])(?=\s*(?:[.．、]|\b))/g,
+        (_, label, gap, key) => label + gap + (keyMap.get(key) || key));
+  }
+
+  // Shuffle option content, relabel it A/B/C/D, and carry the same mapping
+  // into answers and explanation text.
   function shuffledQuestion(q) {
+    const visibleOpts = shuffle(q.opts);
+    const visibleKeys = visibleOpts.map((_, i) => String.fromCharCode(65 + i));
+    const keyMap = new Map(visibleOpts.map((o, i) => [o.k, visibleKeys[i]]));
     return {
       ...q,
-      opts: shuffle(q.opts)
+      opts: visibleOpts.map((o, i) => ({ ...o, k: visibleKeys[i] })),
+      ans: q.ans.map(k => keyMap.get(k)).sort(),
+      ana: remapAnalysis(q.ana, keyMap)
     };
   }
 
